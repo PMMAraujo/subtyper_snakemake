@@ -67,7 +67,7 @@ rule tree_maker:
     output:
         "trees/{sample}.parstree"
     run:
-        name = input[0].split('_')[-1].split('.')[0]
+        name = input[0].replace('aligned/aligned_' ,'').replace('.fasta', '')
         subprocess.call('cat {0} data/subtype_refs.fasta > trees/msa_{1}.fasta ; iqtree -nt 2 -s trees/msa_{1}.fasta -m GTR+G4 -g data/backbone_bestTree.result -redo -pre trees/{1} -quiet'.format(input[0], name), shell=True)
         subprocess.call('rm -r trees/msa_*.fasta trees/*.ckp.gz trees/*.iqtree trees/*.treefile trees/*.log', shell=True)
 
