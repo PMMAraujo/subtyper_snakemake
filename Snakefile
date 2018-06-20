@@ -1,3 +1,5 @@
+# urgent need to format all pipline specialy number of chracters by line
+
 ### IMPORTS AND DEPENDENCIES
 import os
 from Bio import SeqIO
@@ -12,6 +14,7 @@ configfile: "config.yaml"
 GR = config['genomic_region']
 
 # list file in input folder and use the first one
+# need to add some type of expection handling here if mor ethat 1 file is found and report an error
 INPUT = os.listdir('input')[0]
 
 # pick up the file in th INPUT variable wich is an MSA and 
@@ -31,6 +34,7 @@ rule subtype_all:
         "all_subtyped.txt",
         "with_neighbors_all_subtyped.txt"
     run:
+    	# need to improve this part here, maybe use the 'concatenator.py'
         def my_func():
             for file in input.sho:
                 with open(file, 'r') as in_file:
@@ -67,6 +71,7 @@ rule tree_maker:
     output:
         "trees/{sample}.parstree"
     run:
+    	# the is a snakemake way of running shell code (import snakemake.shell), maybe replace
         name = input[0].replace('aligned/aligned_' ,'').replace('.fasta', '')
         subprocess.call('cat {0} data/subtype_refs.fasta > trees/msa_{1}.fasta ; iqtree -nt 2 -s trees/msa_{1}.fasta -m GTR+G4 -g data/backbone_bestTree.result -redo -pre trees/{1} -quiet'.format(input[0], name), shell=True)
         subprocess.call('rm -r trees/msa_*.fasta trees/*.ckp.gz trees/*.iqtree trees/*.treefile trees/*.log', shell=True)
@@ -98,7 +103,7 @@ rule aligner:
     output:
         temp("aligned/pre_{sample}.fasta")
     shell:
-        'mafft --quiet  --add {input} --keeplength ./data/HXB2.fasta  >  {output}'
+        'mafft --quiet --add {input} --keeplength ./data/HXB2.fasta > {output}'
 
 
 
