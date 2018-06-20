@@ -74,7 +74,7 @@ rule tree_maker:
     	# the is a snakemake way of running shell code (import snakemake.shell), maybe replace
         name = input[0].replace('aligned/aligned_' ,'').replace('.fasta', '')
         subprocess.call('cat {0} data/subtype_refs.fasta > trees/msa_{1}.fasta ; iqtree -nt 2 -s trees/msa_{1}.fasta -m GTR+G4 -g data/backbone_bestTree.result -redo -pre trees/{1} -quiet'.format(input[0], name), shell=True)
-        subprocess.call('rm -r trees/msa_*.fasta trees/*.ckp.gz trees/*.iqtree trees/*.treefile trees/*.log', shell=True)
+        subprocess.call('rm -r trees/msa_{0}.fasta trees/{0}.ckp.gz trees/{0}.iqtree trees/{0}.treefile trees/{0}.log'.format(name), shell=True)
 
 ###ALIGNER
 
