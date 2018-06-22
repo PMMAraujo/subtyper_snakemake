@@ -12,7 +12,7 @@ import argparse
 
 def get_crs(treefile):
     t = Tree(treefile)
-    identifier = treefile.split('.')[0].split('/')[-1]
+    identifier = treefile.replace('trees/', '').replace('.parstree', '')
     node = t.search_nodes(name=identifier)[0]
     parents = node.up
     result =[]
@@ -24,7 +24,7 @@ def get_crs(treefile):
     result = [x for x in result if x != identifier]
     txt_result = ','.join(result)
     out_long = "{0}\t{1}\n".format(identifier, txt_result)
-    only_subtype = ','.join([x.split('_')[0] for x in result])
+    only_subtype = ','.join(set([x.split('_')[0] for x in result]))
     out_short = "{0}\t{1}\n".format(identifier, only_subtype)
     return out_short, out_long
 
