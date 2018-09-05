@@ -7,7 +7,7 @@ This was designed to execute in unix based systems. However, as long as one can 
 ## How to install
 
 1) Strongly advise the usage of conda (anaconda or miniconda) as a package manager (instalation instructions here: https://conda.io/docs/user-guide/install/index.html). The following steps assume a proper instalation of conda in the system;
-2) Create the environment, this should one be done once per system: conda-env create -f environment.yaml --name subtype_hiv1;
+2) Create the environment, this should one be done once per system: conda-env create -f environment.yaml;
 3) Confirm if the environment was created/you already had it: conda-env list;
 3.1) If "subtype_hiv1" is in the list good, otherwise go to step 2;
 4) Activate the environmet:  source activate subtype_hiv1 ( works in unix systems);
