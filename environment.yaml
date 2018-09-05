@@ -1,3 +1,4 @@
+name: subtype_hiv1
 channels:
   - conda-forge
   - bioconda
