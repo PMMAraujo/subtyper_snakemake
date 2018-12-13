@@ -1,7 +1,6 @@
 ### IMPORTS AND DEPENDENCIES
 import os
 from Bio import SeqIO
-import subprocess
 import sys
 
 configfile: "config.yaml"
