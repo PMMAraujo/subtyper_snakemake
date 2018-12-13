@@ -1,14 +1,12 @@
 name: subtype_hiv1
 channels:
-  - conda-forge
   - bioconda
-  - defaults
   - biocore
+  - conda-forge
 dependencies:
-  - python=3.5
-  - snakemake=3.11.0
-  - pyyaml=3.11
-  - biopython=1.71
+  - python=3.6.7
+  - snakemake=5.3.0
   - mafft=7.245
   - ete3=3.1.1
-  - iqtree=1.5.5
+  - iqtree=1.6.8
+  - biopython=1.71

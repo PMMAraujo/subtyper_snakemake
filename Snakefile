@@ -1,9 +1,8 @@
-# urgent need to format all pipline specialy number of chracters by line
-
 ### IMPORTS AND DEPENDENCIES
 import os
 from Bio import SeqIO
 import subprocess
+import sys
 
 configfile: "config.yaml"
 
@@ -13,68 +12,40 @@ configfile: "config.yaml"
 # define genomic region from config file
 GR = config['genomic_region']
 
-# list file in input folder and use the first one
-# need to add some type of expection handling here if mor ethat 1 file is found and report an error
-INPUT = os.listdir('input')[0]
+# confirm there is only 1 file in input folder and define it as INPUT
+if len(os.listdir('input')) > 1:
+    sys.exit('ERROR: more than 1 file in the input folder')
+else:
+    INPUT = os.listdir('input')[0]
 
-# pick up the file in th INPUT variable wich is an MSA and 
-# extract the sequences ids from it
+# get ids from the INPUT file (which is as msa)
 MSA = SeqIO.parse('input/{}'.format(INPUT), 'fasta')
 IDS = [seq.id for seq in MSA]
 
 
 ### SUBTYPER
 
-
 rule subtype_all:
     input:
-        sho=expand("subtype/short_{sample}.txt", sample=IDS),
-        lon=expand("subtype/long_{sample}.txt", sample=IDS)
+        trees=expand("trees/{sample}.treefile", sample=IDS)
     output:
-        "all_subtyped.txt",
-        "with_neighbors_all_subtyped.txt"
-    run:
-    	# need to improve this part here, maybe use the 'concatenator.py'
-        def my_func():
-            for file in input.sho:
-                with open(file, 'r') as in_file:
-                    yield in_file.read()
-
-        with open(output[0], 'w') as out_file:
-            out_file.write(''.join(my_func()))
-
-
-        def my_func():
-            for file in input.lon:
-                with open(file, 'r') as in_file:
-                    yield in_file.read()
-
-        with open(output[1], 'w') as out_file:
-            out_file.write(''.join(my_func()))
-
-
-
-rule subtype:
-    input:
-        "trees/{sample}.parstree"
-    output:
-        sho="subtype/short_{sample}.txt",
-        lon="subtype/long_{sample}.txt"
-    shell:
-        "python scripts/get_sub.py -i {input} -s {output.sho} -l {output.lon}"
-
+        "all_subtyped.csv",
+        "report_all_subtyped.csv"
+    script:
+        "scripts/output_subtype.py"
 
 
 rule tree_maker:
     input:
         "aligned/aligned_{sample}.fasta"
     output:
-        "trees/{sample}.parstree"
-    run:
-    	# the is a snakemake way of running shell code (import snakemake.shell), maybe replace
-        name = input[0].replace('aligned/aligned_' ,'').replace('.fasta', '')
-        subprocess.call('cat {0} data/subtype_refs.fasta > trees/msa_{1}.fasta ; iqtree -nt 2 -s trees/msa_{1}.fasta -m GTR+G4 -g data/backbone_bestTree.result -redo -pre trees/{1} -quiet'.format(input[0], name), shell=True)
-        subprocess.call('rm -r trees/msa_{0}.fasta trees/{0}.ckp.gz trees/{0}.iqtree trees/{0}.treefile trees/{0}.log'.format(name), shell=True)
+        "trees/{sample}.treefile"
+    priority:
+        50
+    threads: 2
+    shell:
+        "python scripts/tree_maker.py -i '{input}' -g {GR}"
+
 
 ###ALIGNER
 
@@ -87,23 +58,13 @@ rule align_all:
         "scripts/concatenator.py"
 
 
-rule mapper:
-    input:
-        "aligned/pre_{sample}.fasta",
-    output:
-        "aligned/aligned_{sample}.fasta"
-    shell:
-        "python scripts/mapper.py -i {input} -o {output} -g {GR}"
-
-
-
-rule aligner:
+rule map_and_align:
     input:
         "split/{sample}.fasta"
     output:
-        temp("aligned/pre_{sample}.fasta")
+        "aligned/aligned_{sample}.fasta"
     shell:
-        'mafft --quiet --add {input} --keeplength ./data/HXB2.fasta > {output}'
+        "python scripts/align_and_map.py -i '{input}' -o '{output}' -g {GR}"
 
 
 
@@ -116,28 +77,29 @@ rule split:
         "scripts/spliter.py"
 
 
-
-rule clean:
-    shell:
-        "rm -r split; rm -r aligned"
-
-
-rule delete_interm_files:
-    shell:
-        "rm -r split aligned subtype trees"
-
 # write save and clean intermidiate files
 
+rule delete_interm_files:
+    params:
+        "inter"
+    shell:
+        "python scripts/cleaner.py -w {params}"
+
 rule delete_all_outputs:
+    params:
+        "all"
     shell:
-        "rm -r split aligned subtype trees all_aligned.fasta  all_subtyped.txt with_neighbors_all_subtyped.txt"
+        "python scripts/cleaner.py -w {params}"
 
-rule save_compress_interm_files:
-    shell:
-        "tar -zcvf intermidiate_files.tar.gz split aligned subtype trees ;"
-        "rm -r split aligned subtype trees"
 
-rule save_compress_all:
+rule compress_and_del_inter_files:
+    params:
+        "c_inter"
     shell:
-        "tar -zcvf all.tar.gz * ; "
-        "rm -r split aligned subtype trees all_aligned.fasta  all_subtyped.txt with_neighbors_all_subtyped.txt"
+        "python scripts/cleaner.py -w {params}"
+
+rule compress_all:
+    params:
+        "c_all"
+    shell:
+        "python scripts/cleaner.py -w {params}"
