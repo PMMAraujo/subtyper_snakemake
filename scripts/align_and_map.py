@@ -44,9 +44,10 @@ def align_and_map(msa, out, gr):
     if len(this_region) == 2:
         sequence = all_seq[this_region[0]:this_region[1]]
     elif len(this_region) == 6:
-        sequence = all_seq[this_region[0]:this_region[1]]
-        + all_seq[this_region[2]:this_region[3]]
-        + all_seq[this_region[4]:this_region[5]]
+        gag_reg = all_seq[this_region[0]:this_region[1]]
+        pol_reg = all_seq[this_region[2]:this_region[3]]
+        env_reg = all_seq[this_region[4]:this_region[5]]
+        sequence = gag_reg + pol_reg + env_reg
     else:
         print('ERROR while passing genomic region. Please check the \
         integrety of the script: align_and_map.')
