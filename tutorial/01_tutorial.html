@@ -11863,6 +11863,22 @@ You are now ready to go.</p>
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">### Needed import for this tutorial to work</span>
+
+<span class="kn">from</span> <span class="nn">ete3</span> <span class="k">import</span> <span class="n">Tree</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -11932,7 +11948,97 @@ Note: In this tutorial we run SNAPPY in parallel using 4 cpu cores. This should 
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Wright now would be usefull to look at the 'Snakefile' and see all the previously mentioned rules and how the outputs are buildt from the inputs. Feel free to explore 'Snakefile'.</p>
+<p>Lets look at the first 10 lines of each of the outputs.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># pandas (python package) comand to open a csv and show first 10 lines</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;all_subtyped.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> 
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># pandas (python package) comand to open a csv and show first 10 lines</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;report_all_subtyped.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> 
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>But how did SNAPPY produce this outputs? This was infered from the cfreaqted phylogenetic trees. Lets plot some examples to understand it.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># using ete3 python package to open the tree</span>
+<span class="n">t01</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">(</span><span class="s1">&#39;trees/GU345241.treefile&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># using ete3 python package to find the node where our target sequence is</span>
+<span class="n">parent01</span> <span class="o">=</span> <span class="n">t01</span><span class="o">.</span><span class="n">search_nodes</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">up</span>
+
+<span class="c1"># using ete3 python package to open the tree</span>
+<span class="n">t02</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">(</span><span class="s1">&#39;trees/MH062032.treefile&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># using ete3 python package to find the node where our target sequence is</span>
+<span class="n">parent02</span> <span class="o">=</span> <span class="n">t02</span><span class="o">.</span><span class="n">search_nodes</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;target&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">up</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># plot the nodes where our target sequences are respectively</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parent01</span><span class="p">),</span> <span class="nb">print</span><span class="p">(</span><span class="n">parent02</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As we can see for the previous plots the reuslts for the first and the secound target are extremely diffrent. This is due to the capacity to infer from the phylogeny for the two inputs. Feel free to discuss this results.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Right now would be usefull to look at the 'Snakefile' and see all the previously mentioned rules and how the outputs are buildt from the inputs. Feel free to explore 'Snakefile'.</p>
 
 </div>
 </div>
